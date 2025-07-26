@@ -1,0 +1,38 @@
+version: "3.9"
+
+networks:
+  log2u-net:
+    external: true          # 이미 쓰고 계신 네트워크
+
+services:
+# ────────────────────────── pg-meta ──────────────────────────
+  meta:
+    image: supabase/postgres-meta:v0.79.6        # 2025-06 기준 최신 안정 버전
+    container_name: supabase-meta
+    environment:
+      # pg-meta가 당신의 Postgres에 직접 붙습니다
+      PG_META_DB_HOST: log2u-postgres
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: log2u_db
+      PG_META_DB_USER: log2u_db
+      PG_META_DB_PASSWORD: log2u123!@#
+      PG_META_PORT: 8080
+    networks:
+      - log2u-net
+
+# ────────────────────────── Studio UI ──────────────────────────
+  studio:
+    image: supabase/studio:latest
+    container_name: supabase-studio
+    depends_on:
+      - meta
+    ports:
+      - "3000:3000"
+    environment:
+      # Studio가 pg-meta REST 엔드포인트로 호출하도록 지정
+      STUDIO_PG_META_URL: http://meta:8080
+      # 로그인 없이 바로 들어가려면 ↓ 한 줄 추가
+      STUDIO_DISABLE_LOGIN: "true"
+    networks:
+      - log2u-net
+

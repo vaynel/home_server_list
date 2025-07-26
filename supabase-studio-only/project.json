@@ -1,0 +1,11 @@
+{
+  "id": "default",
+  "ref": "default",
+  "name": "My Local Project",
+  "db_host": "log2u-postgres",
+  "db_port": 5432,
+  "db_name": "log2u_db",
+  "db_user": "log2u_db",
+  "db_password": "log2u123!@#"
+}
+

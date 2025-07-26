@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:6.0
+    restart: unless-stopped
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - rocketchat_mongo:/data/db
+    ports:
+      - 27017:27017
+
+  mongo-init-replica:
+    image: mongo:6.0
+    depends_on:
+      - mongo
+    entrypoint: >
+      bash -c "
+        sleep 5;
+        mongosh --host mongo:27017 --eval 'rs.initiate({_id:\"rs0\", members:[{_id:0, host:\"mongo:27017\"}]})';
+      "
+
+  rocketchat:
+    image: rocketchat/rocket.chat:latest
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - mongo-init-replica
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - ROOT_URL=http://127.0.0.1:3000
+      - PORT=3000
+    ports:
+      - 3000:3000
+
+volumes:
+  rocketchat_mongo:
