@@ -1,0 +1,4 @@
+# Synapse DB runtime artifacts
+matrix/data/synapse/homeserver.db-shm
+matrix/data/synapse/homeserver.db-wal
+matrix/data/synapse/homeserver.db
